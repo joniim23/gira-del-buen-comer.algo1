@@ -13,7 +13,7 @@ class Alumno {
 class Deglutidor inherits Alumno {
 	var property tieneAuto = false
 	
-	override method esBuenaOnda() = tieneAuto && platosComidos >= 20 
+	override method esBuenaOnda() = tieneAuto && platosComidos > 20 
 }
 
 class Critico inherits Alumno {

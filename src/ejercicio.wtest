@@ -1,0 +1,119 @@
+import alumnos.*
+import gastronomicos.*
+import giras.*
+
+describe "Tests del ejercicio" {
+	const marito = new Chef()
+	const deglutidor1 = new Deglutidor (tieneAuto = true)
+	const deglutidor2 = new Deglutidor ()
+	const deglutidor3 = new Deglutidor (tieneAuto = true)
+	const critico1 = new Critico()
+	//const critico2 = new Critico()
+	const gira1 = new Gira()
+	//const gira2 = new Gira()
+	const bodegon1 = new Bodegon()
+	const bodegon2 = new Bodegon()
+	const resto1 = new Restaurant(calificacion = 3, chef = marito)
+	const resto2 = new RestaurantEtnico()
+	
+	method agregar3AlumnosBuenaOnda() {
+		deglutidor1.comerPlato(21)
+		gira1.agregarAlumno(deglutidor1)
+		deglutidor3.comerPlato(21)
+		gira1.agregarAlumno(deglutidor3)
+		critico1.comerPlato(2)
+		critico1.horasMirandoPrograma(21)
+		gira1.agregarAlumno(critico1)
+	}
+	
+	test "alumnos buena onda" {
+		deglutidor1.comerPlato(11)
+		assert.notThat(deglutidor1.esBuenaOnda())
+		deglutidor1.comerPlato(10)
+		assert.that(deglutidor1.esBuenaOnda())
+		deglutidor2.comerPlato(21)
+		assert.notThat(deglutidor2.esBuenaOnda())
+		critico1.comerPlato(1)
+		critico1.horasMirandoPrograma(9)
+		assert.notThat(critico1.esBuenaOnda())
+		critico1.horasMirandoPrograma(10)
+		assert.that(critico1.esBuenaOnda())
+	}
+	
+	test "alumnos que pueden ir a una gira" {
+		deglutidor1.comerPlato(21)
+		gira1.agregarAlumno(deglutidor1)
+		assert.equals(1,gira1.participantes())
+		deglutidor3.comerPlato(21)
+		gira1.agregarAlumno(deglutidor3)
+		assert.equals(2,gira1.participantes())
+		critico1.comerPlato(2)
+		critico1.horasMirandoPrograma(21)
+		gira1.agregarAlumno(critico1)
+		assert.equals(3,gira1.participantes())
+	}
+	
+	test "alumnos que no pueden ir a una gira" {
+		deglutidor1.comerPlato(20)
+		assert.throwsExceptionWithMessage("El alumno "+deglutidor1+" no es buena onda",{gira1.agregarAlumno(deglutidor1)})
+		deglutidor2.comerPlato(21)
+		assert.throwsExceptionWithMessage("El alumno "+deglutidor2+" no es buena onda",{gira1.agregarAlumno(deglutidor2)})
+	}
+	
+	test "gira con bodegones que valen la pena" {
+		self.agregar3AlumnosBuenaOnda()
+		gira1.agregarBodegon(bodegon1)
+		gira1.agregarBodegon(bodegon2)
+		assert.notThat(gira1.bodegonesValenLaPena())
+		bodegon1.variedadDeComidas(3)
+		bodegon2.variedadDeComidas(2)
+		assert.notThat(gira1.bodegonesValenLaPena())
+		bodegon2.variedadDeComidas(3)
+		assert.that(gira1.bodegonesValenLaPena())
+	}
+
+	test "gira con restaurantes que valen la pena" {
+		gira1.agregarRestaurant(resto1)
+		assert.notThat(gira1.restaurantesValenLaPena())
+		escuelaDeGastronomia.agregarChef(marito)
+		assert.that(gira1.restaurantesValenLaPena())
+		gira1.agregarRestaurant(resto2)
+		assert.notThat(gira1.restaurantesValenLaPena())
+		resto2.ubicacionEsExotica(true)
+		assert.that(gira1.restaurantesValenLaPena())
+	}
+	
+	test "gira con bodegones y restaurantes que valen la pena" {
+		self.agregar3AlumnosBuenaOnda()
+		gira1.agregarRestaurant(resto1)
+		gira1.agregarBodegon(bodegon1)
+		marito.profesion(trabajarEnTv)
+		assert.throwsExceptionWithMessage("La gira"+gira1+" no vale la pena",{escuelaDeGastronomia.agregarGira(gira1)})
+		bodegon1.variedadDeComidas(3)
+		escuelaDeGastronomia.agregarGira(gira1)
+		assert.equals(1,escuelaDeGastronomia.cantidadDeGiras())
+	}
+	
+	test "alumno que mas platos comio" {
+		self.agregar3AlumnosBuenaOnda()
+		deglutidor2.tieneAuto(true)
+		deglutidor2.comerPlato(25)
+		gira1.agregarAlumno(deglutidor2)
+		assert.equals(deglutidor2,gira1.gordo())
+		
+	}
+}
+
+/*
+ * Para agregar un bar nuevo sin modificar codigo deberian ser polimorficos los
+ * bodegones y los resturantes (ahora no se puede, ya que los bodegones 
+ * necesitan saber la cantidad de personas que van a comer). Es decir, como 
+ * esta el codigo solo puede ser polimorfico con alguno de los dos
+ */
+
+/*
+ * si el alumno va a cambiar el tipo, solamente hay que agregar que el tipo
+ * sea un atributo en Alumno y pueda ser uno de los dos tipos, de manera tal 
+ * que si quiero modificar el tipo, solamente asigno en tipo del Alumno el tipo (vale
+ * la redundancia) que necesito que sea
+ */ 

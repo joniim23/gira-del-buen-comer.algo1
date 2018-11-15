@@ -5,11 +5,17 @@ class Gira {
 	var restaurantes = []
 	var alumnos = []
 	
-	method agregarAlumnos() = alumnos.addAll( self.alumnosBuenaOnda() )
+	method agregarAlumno(alumno) {
+		if (alumno.esBuenaOnda()) alumnos.add(alumno)
+		else throw new Exception ("El alumno "+alumno+" no es buena onda")	
+	}
+	
 	method alumnosBuenaOnda() = alumnos.filter{ alumno => alumno.esBuenaOnda() }
 	
+	method gordo() = alumnos.max { alumno => alumno.platosComidos() } //Alumno que mas platos comio xD
+	
 	method agregarBodegon( bodegon ) = bodegones.add(bodegon)
-	method agregarRestaurantes( restaurant ) = restaurantes.add(restaurant)
+	method agregarRestaurant( restaurant ) = restaurantes.add(restaurant)
 	
 	method participantes() = self.alumnosBuenaOnda().size()
 	
